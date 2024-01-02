@@ -24,11 +24,13 @@ body {
   margin-left: auto;
   margin-right: auto;
   max-height: 700px;
+  max-width: 650px;
   min-width: 400px;
   padding: 10px;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  border-radius: 1%;
 }
 
 .displayholder, .inputholder {
@@ -92,4 +94,12 @@ body {
 
 .calcrow {
   display: flex;
+}
+
+#equals {
+  background-color: green;
+}
+
+#erase {
+  background-color: darkred;
 }
