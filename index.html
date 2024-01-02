@@ -7,45 +7,53 @@
     <link href="style.css" rel="stylesheet" />
   </head>
   <body>
-    <div class="calculator">
-      <div class="calcrow">
-        <button class="calcbutton operator" id="erase">&#9003</button>
-        <button class="calcbutton operator">(</button>
-        <button class="calcbutton operator">)</button>
-        <button class="calcbutton operator">mod</button>
-        <button class="calcbutton number">π</button>
-      </div>
-      <div class="calcrow">
-        <button class="calcbutton number">7</button>
-        <button class="calcbutton number">8</button>
-        <button class="calcbutton number">9</button>
-        <button class="calcbutton operator">÷</button>
-        <button class="calcbutton operator">√</button>
-      </div>
-      <div class="calcrow">
-        <button class="calcbutton number">4</button>
-        <button class="calcbutton number">5</button>
-        <button class="calcbutton number">6</button>
-        <button class="calcbutton operator">&times</button>
-        <button class="calcbutton operator"><div class="squareholder"><var>x</var><sup>2</sup></div></button>
-      </div>
-      <div class="bottom">
-        <div class="calcrowbottom">
+      <div class="calculator">
+        <div class="history">
+
+        </div>
+        <div class="displayholder">
+          <input class="display"></input>
+        </div>
+        <div class="inputholder">
           <div class="calcrow">
-            <button class="calcbutton number">1</button>
-            <button class="calcbutton number">2</button>
-            <button class="calcbutton number">3</button>
-            <button class="calcbutton operator">-</button>
+            <button class="calcbutton operator" id="erase">&#9003</button>
+            <button class="calcbutton operator">(</button>
+            <button class="calcbutton operator">)</button>
+            <button class="calcbutton operator">mod</button>
+            <button class="calcbutton number">π</button>
           </div>
           <div class="calcrow">
-            <button class="calcbutton number">0</button>
-            <button class="calcbutton operator">.</button>
-            <button class="calcbutton operator">%</button>
-            <button class="calcbutton operator">+</button>
+            <button class="calcbutton number">7</button>
+            <button class="calcbutton number">8</button>
+            <button class="calcbutton number">9</button>
+            <button class="calcbutton operator">÷</button>
+            <button class="calcbutton operator">√</button>
+          </div>
+          <div class="calcrow">
+            <button class="calcbutton number">4</button>
+            <button class="calcbutton number">5</button>
+            <button class="calcbutton number">6</button>
+            <button class="calcbutton operator">&times</button>
+            <button class="calcbutton operator"><div class="squareholder"><var>x</var><sup>2</sup></div></button>
+          </div>
+          <div class="bottom">
+            <div class="calcrowbottom">
+              <div class="calcrow">
+                <button class="calcbutton number">1</button>
+                <button class="calcbutton number">2</button>
+                <button class="calcbutton number">3</button>
+                <button class="calcbutton operator">-</button>
+              </div>
+              <div class="calcrow">
+                <button class="calcbutton number">0</button>
+                <button class="calcbutton operator">.</button>
+                <button class="calcbutton operator">%</button>
+                <button class="calcbutton operator">+</button>
+              </div>
+            </div>
+            <button class="calcbutton operator" id="equals">=</button>
           </div>
         </div>
-        <button class="calcbutton operator" id="equals">=</button>
       </div>
-    </div>
   </body>
 </html>
