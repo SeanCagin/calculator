@@ -17,24 +17,24 @@
         <div class="inputholder">
           <div class="calcrow">
             <button class="calcbutton operator" id="erase">&#9003</button>
-            <button class="calcbutton operator">(</button>
-            <button class="calcbutton operator">)</button>
-            <button class="calcbutton operator">mod</button>
-            <button class="calcbutton number">π</button>
+            <button class="calcbutton operator" id="openpar">(</button>
+            <button class="calcbutton operator" id="closepar">)</button>
+            <button class="calcbutton operator" id="mod">mod</button>
+            <button class="calcbutton" id="pi">π</button>
           </div>
           <div class="calcrow">
             <button class="calcbutton number">7</button>
             <button class="calcbutton number">8</button>
             <button class="calcbutton number">9</button>
-            <button class="calcbutton operator">÷</button>
-            <button class="calcbutton operator">√</button>
+            <button class="calcbutton classic operator">÷</button>
+            <button class="calcbutton operator" id="root">√</button>
           </div>
           <div class="calcrow">
             <button class="calcbutton number">4</button>
             <button class="calcbutton number">5</button>
             <button class="calcbutton number">6</button>
-            <button class="calcbutton operator">&times</button>
-            <button class="calcbutton operator"><div class="squareholder"><var>x</var><sup>2</sup></div></button>
+            <button class="calcbutton classic operator">&times</button>
+            <button class="calcbutton operator" id="square">^</button>
           </div>
           <div class="bottom">
             <div class="calcrowbottom">
@@ -42,18 +42,20 @@
                 <button class="calcbutton number">1</button>
                 <button class="calcbutton number">2</button>
                 <button class="calcbutton number">3</button>
-                <button class="calcbutton operator">-</button>
+                <button class="calcbutton classic operator">-</button>
               </div>
               <div class="calcrow">
                 <button class="calcbutton number">0</button>
-                <button class="calcbutton operator">.</button>
-                <button class="calcbutton operator">%</button>
-                <button class="calcbutton operator">+</button>
+                <button class="calcbutton operator" id="dot">.</button>
+                <button class="calcbutton operator" id="percent">%</button>
+                <button class="calcbutton classic operator">+</button>
               </div>
             </div>
             <button class="calcbutton operator" id="equals">=</button>
           </div>
         </div>
       </div>
+
+      <script src="calcScript.js"></script>
   </body>
 </html>
