@@ -26,3 +26,4 @@ const equals = document.querySelector("#equals");
 equals.addEventListener("click", event => {
     displayField.value = "=";
 });
+
