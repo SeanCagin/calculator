@@ -181,6 +181,7 @@ function enterKey(event) {
     } else {
         return;
     }
+
     let clickEvent = new Event("click");
     const eventButton = document.querySelector(buttonId);
     eventButton.dispatchEvent(clickEvent);
@@ -223,7 +224,7 @@ let delExpression = false;
 const displayField = document.querySelector(".display");
 const validKeyInput = new Set(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
                                     OPERATIONS.ADD, OPERATIONS.SUBTRACT, OPERATIONS.MULTIPLY, OPERATIONS.DIVIDE,
-                                    OPERATIONS.POWER, DOT, OPERATIONS.OPENPAR, OPERATIONS.CLOSEPAR, OPERATIONS.MOD, 
+                                    OPERATIONS.POWER, DOT, OPERATIONS.OPENPAR, OPERATIONS.CLOSEPAR, OPERATIONS.MOD, OPERATIONS.FACTORIAL,
                                     "Delete", "Backspace", "Enter", "="]);
 
 
