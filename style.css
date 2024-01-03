@@ -96,18 +96,15 @@ body {
   background-image: linear-gradient(rgba(0, 0, 0, 0.5) 0 0);
 }
 
-#equals {
-  flex-grow: 1;
-}
-
 .calcrow {
   display: flex;
 }
 
-#equals {
+#equals { /*Equals unicode*/
   background-color: green;
+  flex-grow: 1;
 }
 
-#erase {
+#delete  {
   background-color: darkred;
 }
