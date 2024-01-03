@@ -1,3 +1,5 @@
+"use strict";
+
 function factorial(n) {
     if (n === 0) return 1;
     return n * factorial(n - 1);
@@ -25,6 +27,9 @@ function operationToResult(operation, arg1, arg2) {
 
         case OPERATIONS.FACTORIAL:
             return Number.isInteger(arg1) && arg1 >= 0 ? factorial(arg1) : "ERROR";
+
+        case OPERATIONS.NEGATION:
+            return arg1 * -1;
     }
 }
 
@@ -56,8 +61,8 @@ function operationToResult(operation, arg1, arg2) {
 
 
 function computeSingleOp(numStack, opStack) {
-    let op = opStack.pop();
-    if (op === OPERATIONS.FACTORIAL) {
+    let op = opStack.pop().operation;
+    if (op === OPERATIONS.FACTORIAL || op === OPERATIONS.NEGATION) {
         let num = numStack.pop();
         numStack.push(operationToResult(op, num));
     } else {
@@ -74,40 +79,83 @@ function unravelComputationStacks(numStack, opStack) {
     }
 }
 
-function logNumberAndOp(operation, currNum, numStack, opStack) {
-    numStack.push(+currNum);
+function logNumberAndOp(operation, currNum, numStack, opStack, currPrec, prev = "") {
+    if (operation === OPERATIONS.NEGATION) return;
+    if (prev !== OPERATIONS.FACTORIAL) {
+        numStack.push(+currNum);
+    }
 
-    if (operation === OPERATIONS.OPENPAR) return PARSHIFT;
-    else if (operation === OPERATIONS.CLOSEPAR) return -1 * PARSHIFT;
 
-    while(opStack.length > 0 && PRECEDENCE[operation] <= PRECEDENCE[opStack[opStack.length - 1]]) {
+    while(opStack.length > 0 && PRECEDENCE[operation] + currPrec <= (opStack[opStack.length - 1].prec)) {
         computeSingleOp(numStack, opStack);
     }
-    opStack.push(operation);
+    opStack.push({operation: operation, prec: PRECEDENCE[operation] + currPrec});
 
     return 0;
 }
 
 
+function preprocessString(str) {
+    let retval = "";
+    for (let i = 0; i < str.length; i++) {
+        let char = str.charAt(i);
+        if (char.charCodeAt(0) === 215) {
+            retval += "*";
+        } else if (char.charCodeAt(0) === 247) {
+            retval += "/";
+        } else {
+            retval += char
+        }
+    }
+    return retval;
+}
+
 function evaluate() {
     const OPSET = new Set(Object.values(OPERATIONS));
-    let str = displayField.value;
+    OPSET.delete("(");
+    OPSET.delete(")");
+    let str = preprocessString(displayField.value);
     let numStack = [];
     let opStack = [];
     let currNum = "";
     let currPrec = 0;
+    let errFlag = false;
 
     for (let i = 0; i < str.length; i++) {
         let char = str.charAt(i);
-        if (char.charCodeAt(0) === 215) char = "*";
-        else if (char.charCodeAt(0) === 247) char = "/";
-        if (OPSET.has(char)) {
-            currPrec += logNumberAndOp(char, currNum, numStack, opStack);
+
+        if (char === "-" && (i == 0 || (OPSET.has(str.charAt(i - 1)) && str.charAt(i - 1) != OPERATIONS.FACTORIAL) || str.charAt(i - 1) === "(")) {
+            opStack.push({operation: OPERATIONS.NEGATION, prec: PRECEDENCE[OPERATIONS.NEGATION] + currPrec});
+        } else if (char === "(") {
+            if (i > 0 && !OPSET.has(str.charAt(i - 1))) {
+                logNumberAndOp(OPERATIONS.MULTIPLY, currNum, numStack, opStack, currPrec);
+                currNum = "";
+            }
+            currPrec += PARSHIFT;
+        } else if (char === ")") {
+            currPrec -= PARSHIFT;
+            if (currPrec < 0) {
+                errFlag = true;
+                break;
+            } 
+            if (i < str.length - 1 && !OPSET.has(str.charAt(i + 1))) {
+                logNumberAndOp(OPERATIONS.MULTIPLY, currNum, numStack, opStack, currPrec);
+                currNum = "";
+            } else if (i == str.length - 1) {
+                numStack.push(+currNum);
+                currNum = "";
+            }
+        } else if (OPSET.has(char)) {
+            let prev = "";
+            if (i != 0) prev = str.charAt(i - 1);
+            logNumberAndOp(char, currNum, numStack, opStack, currPrec, prev);
             currNum = "";
         } else {
             currNum += char;
         }
     }
+
+    if (currPrec > 0) errFlag = true;
 
     if (currNum !== "") {
         numStack.push(+currNum);
@@ -116,11 +164,9 @@ function evaluate() {
 
     unravelComputationStacks(numStack, opStack);
 
-    if (opStack.length !== 0 || numStack.length !== 1 || (numStack.length == 1 && isNaN(numStack[0]))) {
-        displayField.value = "Malformed Expression";
-    }
+    if (opStack.length !== 0 || numStack.length !== 1 || (numStack.length == 1 && isNaN(numStack[0])) || errFlag) return [-1, "ERROR"];
 
-    else displayField.value = numStack[0];
+    return [1, numStack[0]];
 }
 
 
@@ -145,6 +191,7 @@ const DOT = "46";
 const OPERATIONS = {
     ADD: "+",
     SUBTRACT: "-",
+    NEGATION: "neg",
     MULTIPLY: "*",
     DIVIDE: "/",
     POWER: "^",
@@ -161,14 +208,17 @@ const PRECEDENCE = {
     [OPERATIONS.MULTIPLY]: 2,
     [OPERATIONS.DIVIDE]: 2,
     [OPERATIONS.MOD]: 2,
-    [OPERATIONS.POWER]: 3,
-    [OPERATIONS.FACTORIAL]: 3,
+    [OPERATIONS.NEGATION]: 3,
+    [OPERATIONS.POWER]: 4,
+    [OPERATIONS.FACTORIAL]: 4,
     [OPERATIONS.EMPTYOP]: 0,
 };
 
 const PARSHIFT = 4;
 
 // Driver stars here
+
+let delExpression = false;
 
 const displayField = document.querySelector(".display");
 const validKeyInput = new Set(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
@@ -184,6 +234,10 @@ const numList = document.querySelectorAll(".number, #c46, #pi, #e");
 
 numList.forEach(button => {
     button.addEventListener("click", event => {
+        if (delExpression) {
+            displayField.value = "";
+            delExpression = false;
+        }
         let addval = event.target.textContent;    
         if (event.target.id === "pi") addval = "3.141592";
         else if (event.target.id === "e") addval = "2.718282";
@@ -199,22 +253,59 @@ const ops = document.querySelectorAll(`.classic, #c${OPERATIONS.MOD.charCodeAt(0
 
 ops.forEach(button => {
     button.addEventListener("click", event => {
+        if (delExpression) {
+            displayField.value = "";
+            delExpression = false;
+        }
         displayField.value += event.target.textContent;
     });
 });
 
 const erase = document.querySelector("#delete");
 erase.addEventListener("click", event => {
-    numStack = [];
-    opStack = [];
-    currNum = "";
-    currPrec = 0;
+    delExpression = false;
     displayField.value = "";
 });
 
 const equals = document.querySelector("#equals");
 equals.addEventListener("click", event => {
-    evaluate();
+    let [success, result] = evaluate();
+
+    if (success == -1) {
+        displayField.value = "Malformed Expression";
+        delExpression = true;    
+    } else {
+        let equationHistory = document.createElement("div");
+        let equals = document.createElement("div");
+        let equationResult = document.createElement("div");
+        let history = document.createElement("div");
+
+        equationHistory.style.width = "60%";
+        equals.style.width = "10%"
+        equationResult.style.width = "30%";
+        equationResult.style.textAlign = "right";
+
+        equationHistory.textContent = displayField.value;
+        equals.textContent = "=";
+        equationResult.textContent = result;
+
+        history.classList.toggle("historyElement");
+
+        history.appendChild(equationHistory);
+        history.appendChild(equals);
+        history.appendChild(equationResult);
+
+
+        history.childNodes.forEach(node => {
+            node.addEventListener("click", event => {
+                displayField.value = event.target.parentNode.childNodes[0].textContent;
+            }) 
+        });
+
+        displayField.value = result;
+
+        document.querySelector(".history").appendChild(history);
+    }
 });
 
 

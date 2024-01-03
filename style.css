@@ -37,6 +37,7 @@ body {
 .displayholder, .inputholder {
   flex: 0 0 auto;
 }
+
 .displayholder {
   display: flex;
 }
@@ -45,6 +46,22 @@ body {
   min-height: 100px;
   max-height: 400px;
   flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+.historyElement {
+  background-color: rgb(25, 25, 25);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  font-size: 24px;
+  font-weight: bold;
+  padding: 8px;
+  flex: 0 0 1;
+}
+
+.historyElementComponent {
+  width: 33%;
 }
 
 .history, .display {
