@@ -127,7 +127,7 @@ function evaluate() {
         if (char === "-" && (i == 0 || (OPSET.has(str.charAt(i - 1)) && str.charAt(i - 1) != OPERATIONS.FACTORIAL) || str.charAt(i - 1) === "(")) {
             opStack.push({operation: OPERATIONS.NEGATION, prec: PRECEDENCE[OPERATIONS.NEGATION] + currPrec});
         } else if (char === "(") {
-            if (i > 0 && !OPSET.has(str.charAt(i - 1))) {
+            if (i > 0 && str.charAt(i - 1) !== "(" && !OPSET.has(str.charAt(i - 1))) {
                 logNumberAndOp(OPERATIONS.MULTIPLY, currNum, numStack, opStack, currPrec);
                 currNum = "";
             }
@@ -138,13 +138,13 @@ function evaluate() {
                 errFlag = true;
                 break;
             } 
-            if (i < str.length - 1 && !OPSET.has(str.charAt(i + 1))) {
+            if (i < str.length - 1 && str.charAt(i + 1) !== ")" && !OPSET.has(str.charAt(i + 1))) {
                 logNumberAndOp(OPERATIONS.MULTIPLY, currNum, numStack, opStack, currPrec);
                 currNum = "";
-            } else if (i == str.length - 1) {
+            }/*  else if (i == str.length - 1) {
                 numStack.push(+currNum);
                 currNum = "";
-            }
+            } */
         } else if (OPSET.has(char)) {
             let prev = "";
             if (i != 0) prev = str.charAt(i - 1);
