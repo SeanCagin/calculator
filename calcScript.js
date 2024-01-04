@@ -23,7 +23,7 @@ function operationToResult(operation, arg1, arg2) {
             return arg1 ** arg2;
 
         case OPERATIONS.MOD:
-            return arg1 % arg2;
+            return arg1 % arg2 >= 0 ? arg1 % arg2 : arg1 % arg2 + arg2;
 
         case OPERATIONS.FACTORIAL:
             return Number.isInteger(arg1) && arg1 >= 0 ? factorial(arg1) : "ERROR";
@@ -32,32 +32,6 @@ function operationToResult(operation, arg1, arg2) {
             return arg1 * -1;
     }
 }
-
-/* function getPrecedence(operation, modifier) {
-    switch(operation) {
-        case OPERATIONS.ADD:
-            return 1 + modifier;
-
-        case OPERATIONS.SUBTRACT:
-            return 1 + modifier;
-
-        case OPERATIONS.MULTIPLY:
-            return 2 + modifier;
-
-        case OPERATIONS.DIVIDE:
-            return 2 + modifier;
-
-        case OPERATIONS.POWER:
-            return 3 + modifier;
-
-        case OPERATIONS.MOD:
-            return 2 + modifier;
-
-        case OPERATIONS.FACTORIAL:
-            return 3 + modifier;
-    }
-}
- */
 
 
 function computeSingleOp(numStack, opStack) {
@@ -81,8 +55,11 @@ function unravelComputationStacks(numStack, opStack) {
 
 function logNumberAndOp(operation, currNum, numStack, opStack, currPrec, prev = "") {
     if (operation === OPERATIONS.NEGATION) return;
-    if (prev !== OPERATIONS.FACTORIAL) {
+    if (prev !== OPERATIONS.FACTORIAL && currNum !== "") {
         numStack.push(+currNum);
+    } else if (prev !== OPERATIONS.FACTORIAL && currNum === "") {
+        // Will result in a malformed expression
+        numStack.push(NaN);
     }
 
 
@@ -141,10 +118,7 @@ function evaluate() {
             if (i < str.length - 1 && str.charAt(i + 1) !== ")" && !OPSET.has(str.charAt(i + 1))) {
                 logNumberAndOp(OPERATIONS.MULTIPLY, currNum, numStack, opStack, currPrec);
                 currNum = "";
-            }/*  else if (i == str.length - 1) {
-                numStack.push(+currNum);
-                currNum = "";
-            } */
+            }
         } else if (OPSET.has(char)) {
             let prev = "";
             if (i != 0) prev = str.charAt(i - 1);
@@ -171,11 +145,11 @@ function evaluate() {
 
 
 function enterKey(event) {
-    event.preventDefault();
     const char = event.key;
     let buttonId = "#";
     if (validKeyInput.has(char)) {
-        if (char === "Delete" || char === "Backspace") buttonId += "delete";
+        event.preventDefault();
+        if (char === "Delete") buttonId += "delete";
         else if (char === "Enter" || char === "=") buttonId += "equals";
         else buttonId += `c${char.charCodeAt(0)}`;
     } else {
@@ -225,7 +199,7 @@ const displayField = document.querySelector(".display");
 const validKeyInput = new Set(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
                                     OPERATIONS.ADD, OPERATIONS.SUBTRACT, OPERATIONS.MULTIPLY, OPERATIONS.DIVIDE,
                                     OPERATIONS.POWER, DOT, OPERATIONS.OPENPAR, OPERATIONS.CLOSEPAR, OPERATIONS.MOD, OPERATIONS.FACTORIAL,
-                                    "Delete", "Backspace", "Enter", "="]);
+                                    "Delete", "Enter", "="]);
 
 
 
@@ -310,4 +284,12 @@ equals.addEventListener("click", event => {
 });
 
 
-document.addEventListener("keydown", enterKey);
+document.addEventListener("keydown", event => {
+    if (event.key === "Backspace") {
+        event.preventDefault();
+        if (delExpression) displayField.value = "";
+        else displayField.value = displayField.value.slice(0, displayField.value.length - 1);
+    } else {
+        enterKey(event);
+    }
+});
