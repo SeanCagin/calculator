@@ -23,7 +23,8 @@ function operationToResult(operation, arg1, arg2) {
             return arg1 ** arg2;
 
         case OPERATIONS.MOD:
-            return arg1 % arg2 >= 0 ? arg1 % arg2 : arg1 % arg2 + arg2;
+            return Number.isInteger(arg1) && Number.isInteger(arg2) ? 
+                    arg1 % arg2 >= 0 ? arg1 % arg2 : arg1 % arg2 + Math.abs(arg2) : "ERROR";
 
         case OPERATIONS.FACTORIAL:
             return Number.isInteger(arg1) && arg1 >= 0 ? factorial(arg1) : "ERROR";
@@ -162,7 +163,7 @@ function enterKey(event) {
 }
 
 //, 
-const DOT = "46";
+const DOT = ".";
 const OPERATIONS = {
     ADD: "+",
     SUBTRACT: "-",
@@ -214,7 +215,7 @@ numList.forEach(button => {
             delExpression = false;
         }
         let addval = event.target.textContent;    
-        if (event.target.id === "pi") addval = "3.141592";
+        if (event.target.id === "pi") addval = "3.141593";
         else if (event.target.id === "e") addval = "2.718282";
         
         displayField.value += addval;
